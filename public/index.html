@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nómina — CONEXVA ERP</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f5f5f5; display: flex; }
+
+    /* SIDEBAR */
+    .sidebar { width: 220px; background: white; height: 100vh; position: fixed; border-right: 1px solid #e5e5e5; padding: 24px 0; }
+    .sidebar .logo { padding: 0 24px 24px; border-bottom: 1px solid #e5e5e5; }
+    .sidebar .logo span { font-size: 20px; font-weight: 700; color: #1a56db; }
+    .sidebar .logo p { font-size: 11px; color: #888; margin-top: 2px; }
+    .sidebar nav { padding: 16px 0; }
+    .sidebar nav a { display: flex; align-items: center; gap: 10px; padding: 10px 24px; color: #555; text-decoration: none; font-size: 14px; }
+    .sidebar nav a:hover { background: #f0f4ff; color: #1a56db; }
+    .sidebar nav a.active { background: #f0f4ff; color: #1a56db; font-weight: 600; border-right: 3px solid #1a56db; }
+
+    /* MAIN */
+    .main { margin-left: 220px; padding: 32px; width: 100%; }
+    .header { margin-bottom: 28px; }
+    .header h1 { font-size: 24px; font-weight: 700; color: #1a1a1a; }
+    .header p { color: #888; font-size: 14px; margin-top: 4px; }
+
+    /* TARJETAS */
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+    .card { background: white; border-radius: 12px; padding: 20px; border: 1px solid #e5e5e5; }
+    .card .label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+    .card .value { font-size: 28px; font-weight: 700; color: #1a1a1a; margin-top: 6px; }
+    .card .sub { font-size: 12px; color: #1a56db; margin-top: 4px; }
+
+    /* TABLA */
+    .table-section { background: white; border-radius: 12px; border: 1px solid #e5e5e5; overflow: hidden; }
+    .table-header { padding: 20px 24px; border-bottom: 1px solid #e5e5e5; display: flex; justify-content: space-between; align-items: center; }
+    .table-header h2 { font-size: 16px; font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; }
+    th { background: #f9f9f9; padding: 12px 24px; text-align: left; font-size: 12px; color: #888; text-transform: uppercase; }
+    td { padding: 14px 24px; border-top: 1px solid #f0f0f0; font-size: 14px; color: #333; }
+    tr:hover td { background: #f9fbff; }
+    .btn { padding: 8px 16px; background: #1a56db; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
+    .btn:hover { background: #1446b8; }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; background: #e8f0fe; color: #1a56db; }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="logo">
+    <span>CONEXVA</span>
+    <p>Moreno Rodríguez y Asociados</p>
+  </div>
+  <nav>
+    <a href="#">👥 Personas</a>
+    <a href="#" class="active">💰 Nóminas</a>
+    <a href="#">➖ Deducciones</a>
+    <a href="#">📊 Informes</a>
+  </nav>
+</div>
+
+<div class="main">
+  <div class="header">
+    <h1>Nómina — Jun 2026</h1>
+    <p>Moreno Rodríguez y Asociados · Panel de Nómina</p>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="label">Empleados registrados</div>
+      <div class="value" id="total-empleados">—</div>
+      <div class="sub">activos este mes</div>
+    </div>
+    <div class="card">
+      <div class="label">Nómina del mes</div>
+      <div class="value">Jun 26</div>
+      <div class="sub" style="color:#e67e00">pendiente de cierre</div>
+    </div>
+    <div class="card">
+      <div class="label">Total a pagar</div>
+      <div class="value" id="total-pagar">—</div>
+      <div class="sub">neto estimado</div>
+    </div>
+  </div>
+
+  <div class="table-section">
+    <div class="table-header">
+      <h2>Empleados</h2>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nombre</th>
+          <th>Puesto</th>
+          <th>Fecha ingreso</th>
+          <th>Salario bruto</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-empleados">
+        <tr><td colspan="6" style="text-align:center;color:#aaa">Cargando empleados...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  fetch('http://localhost:3000/api/nomina/empleados')
+    .then(r => r.json())
+    .then(empleados => {
+      document.getElementById('total-empleados').textContent = empleados.length;
+      const tbody = document.getElementById('tabla-empleados');
+      tbody.innerHTML = '';
+      empleados.forEach(e => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${e.id}</td>
+            <td><strong>${e.nombre}</strong></td>
+            <td><span class="badge">${e.puesto}</span></td>
+            <td>${e.fechaIngreso}</td>
+            <td>$${e.salario.toLocaleString()}</td>
+            <td><button class="btn" onclick="verNomina(${e.id})">Ver recibo</button></td>
+          </tr>`;
+      });
+    });
+
+  function verNomina(id) {
+    window.location.href = `recibo.html?id=${id}`;
+  }
+</script>
+</body>
+</html>

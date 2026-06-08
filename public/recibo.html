@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recibo de Nómina — CONEXVA</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f5f5f5; display: flex; }
+
+    .sidebar { width: 220px; background: white; height: 100vh; position: fixed; border-right: 1px solid #e5e5e5; padding: 24px 0; }
+    .sidebar .logo { padding: 0 24px 24px; border-bottom: 1px solid #e5e5e5; }
+    .sidebar .logo span { font-size: 20px; font-weight: 700; color: #1a56db; }
+    .sidebar .logo p { font-size: 11px; color: #888; margin-top: 2px; }
+    .sidebar nav { padding: 16px 0; }
+    .sidebar nav a { display: flex; align-items: center; gap: 10px; padding: 10px 24px; color: #555; text-decoration: none; font-size: 14px; }
+    .sidebar nav a:hover { background: #f0f4ff; color: #1a56db; }
+    .sidebar nav a.active { background: #f0f4ff; color: #1a56db; font-weight: 600; border-right: 3px solid #1a56db; }
+
+    .main { margin-left: 220px; padding: 32px; width: 100%; }
+
+    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+    .topbar a { color: #1a56db; text-decoration: none; font-size: 14px; }
+    .btn-pdf { padding: 10px 20px; background: #1a56db; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; }
+    .btn-pdf:hover { background: #1446b8; }
+
+    .recibo { background: white; border-radius: 12px; border: 1px solid #e5e5e5; overflow: hidden; max-width: 860px; }
+    .recibo-header { background: #1a56db; padding: 24px 32px; }
+    .recibo-header h2 { color: white; font-size: 20px; }
+    .recibo-header p { color: #a8c4f5; font-size: 13px; margin-top: 4px; }
+
+    .recibo-info { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 28px 32px; border-bottom: 1px solid #f0f0f0; }
+    .info-item .label { font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .info-item .value { font-size: 14px; color: #1a1a1a; font-weight: 500; }
+
+    .recibo-body { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+    .col { padding: 24px 32px; }
+    .col:first-child { border-right: 1px solid #f0f0f0; }
+    .col h3 { font-size: 13px; color: #888; text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 6px; }
+    .col h3.verde { color: #16a34a; }
+    .col h3.rojo { color: #dc2626; }
+    .fila { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f9f9f9; font-size: 14px; }
+    .fila .concepto { color: #555; }
+    .fila .monto-verde { color: #16a34a; font-weight: 500; }
+    .fila .monto-rojo { color: #dc2626; font-weight: 500; }
+    .fila.total { font-weight: 700; font-size: 15px; border-top: 2px solid #e5e5e5; border-bottom: none; margin-top: 8px; padding-top: 12px; }
+
+    .recibo-footer { background: #1a56db; padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; }
+    .recibo-footer .neto-label { color: #a8c4f5; font-size: 13px; }
+    .recibo-footer .neto-valor { color: white; font-size: 28px; font-weight: 700; }
+    .recibo-footer .neto-letras { color: #a8c4f5; font-size: 12px; margin-top: 2px; }
+
+    .resumen { margin-top: 24px; max-width: 860px; background: white; border-radius: 12px; border: 1px solid #e5e5e5; padding: 20px 28px; }
+    .resumen h3 { font-size: 13px; color: #888; margin-bottom: 12px; }
+    .resumen-fila { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="logo">
+    <span>CONEXVA</span>
+    <p>Moreno Rodríguez y Asociados</p>
+  </div>
+  <nav>
+    <a href="#">👥 Personas</a>
+    <a href="index.html" class="active">💰 Nóminas</a>
+    <a href="#">➖ Deducciones</a>
+    <a href="#">📊 Informes</a>
+  </nav>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <a href="index.html">← Volver a Nóminas</a>
+    <button class="btn-pdf" onclick="window.print()">⬇ Descargar PDF</button>
+  </div>
+
+  <div class="recibo" id="recibo">
+    <div class="recibo-header">
+      <h2>Recibo de Nómina — <span id="mes">Jun 2026</span></h2>
+      <p>Moreno Rodríguez y Asociados</p>
+    </div>
+
+    <div class="recibo-info">
+      <div class="info-item"><div class="label">Nombre completo</div><div class="value" id="nombre">—</div></div>
+      <div class="info-item"><div class="label">Puesto</div><div class="value" id="puesto">—</div></div>
+      <div class="info-item"><div class="label">Fecha de ingreso</div><div class="value" id="fecha">—</div></div>
+      <div class="info-item"><div class="label">ID Empleado</div><div class="value" id="emp-id">—</div></div>
+    </div>
+
+    <div class="recibo-body">
+      <div class="col">
+        <h3 class="verde">+ Percepciones</h3>
+        <div class="fila"><span class="concepto">Sueldo base</span><span class="monto-verde" id="sueldo">—</span></div>
+        <div class="fila"><span class="concepto">Parte exenta (art. 93)</span><span class="monto-verde" id="exenta">—</span></div>
+        <div class="fila total"><span>Total percepciones</span><span class="monto-verde" id="total-percepciones">—</span></div>
+      </div>
+      <div class="col">
+        <h3 class="rojo">— Deducciones</h3>
+        <div class="fila"><span class="concepto">IMSS (cuota obrera)</span><span class="monto-rojo" id="imss">—</span></div>
+        <div class="fila"><span class="concepto">ISR retenido</span><span class="monto-rojo" id="isr">—</span></div>
+        <div class="fila"><span class="concepto">INFONAVIT</span><span class="monto-rojo" id="infonavit">—</span></div>
+        <div class="fila total"><span>Total deducciones</span><span class="monto-rojo" id="total-deducciones">—</span></div>
+      </div>
+    </div>
+
+    <div class="recibo-footer">
+      <div>
+        <div class="neto-label">Neto a pagar</div>
+        <div class="neto-letras" id="neto-letras">—</div>
+      </div>
+      <div class="neto-valor" id="neto">—</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id') || 1;
+
+  fetch(`http://localhost:3000/api/nomina/calcular/${id}`)
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById('nombre').textContent = d.empleado;
+      document.getElementById('puesto').textContent = d.puesto || '—';
+      document.getElementById('fecha').textContent = d.fechaIngreso || '—';
+      document.getElementById('emp-id').textContent = '#' + id;
+
+      const bruto = parseFloat(d.salarioBruto);
+      const exenta = bruto * 0.065;
+      const imss = parseFloat(d.deducciones.imss);
+      const isr = parseFloat(d.deducciones.isr);
+      const infonavit = bruto * 0.05;
+      const totalDed = imss + isr + infonavit;
+      const neto = bruto - totalDed;
+
+      const fmt = n => '$' + parseFloat(n).toLocaleString('es-MX', {minimumFractionDigits: 2});
+
+      document.getElementById('sueldo').textContent = fmt(bruto);
+      document.getElementById('exenta').textContent = fmt(exenta);
+      document.getElementById('total-percepciones').textContent = fmt(bruto + exenta);
+      document.getElementById('imss').textContent = '-' + fmt(imss);
+      document.getElementById('isr').textContent = '-' + fmt(isr);
+      document.getElementById('infonavit').textContent = '-' + fmt(infonavit);
+      document.getElementById('total-deducciones').textContent = '-' + fmt(totalDed);
+      document.getElementById('neto').textContent = fmt(neto);
+      document.getElementById('neto-letras').textContent = 'Moreno Rodríguez y Asociados · Jun 2026';
+    });
+</script>
+</body>
+</html>
