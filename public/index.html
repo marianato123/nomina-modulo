@@ -7,9 +7,7 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Segoe UI', sans-serif; background: #f5f5f5; display: flex; }
-
-    /* SIDEBAR */
-    .sidebar { width: 220px; background: white; height: 100vh; position: fixed; border-right: 1px solid #e5e5e5; padding: 24px 0; }
+    .sidebar { width: 220px; background: white; height: 100vh; position: fixed; border-right: 1px solid #e5e5e5; padding: 24px 0; overflow-y: auto; }
     .sidebar .logo { padding: 0 24px 24px; border-bottom: 1px solid #e5e5e5; }
     .sidebar .logo span { font-size: 20px; font-weight: 700; color: #1a56db; }
     .sidebar .logo p { font-size: 11px; color: #888; margin-top: 2px; }
@@ -17,31 +15,54 @@
     .sidebar nav a { display: flex; align-items: center; gap: 10px; padding: 10px 24px; color: #555; text-decoration: none; font-size: 14px; }
     .sidebar nav a:hover { background: #f0f4ff; color: #1a56db; }
     .sidebar nav a.active { background: #f0f4ff; color: #1a56db; font-weight: 600; border-right: 3px solid #1a56db; }
-
-    /* MAIN */
     .main { margin-left: 220px; padding: 32px; width: 100%; }
-    .header { margin-bottom: 28px; }
-    .header h1 { font-size: 24px; font-weight: 700; color: #1a1a1a; }
-    .header p { color: #888; font-size: 14px; margin-top: 4px; }
-
-    /* TARJETAS */
-    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
-    .card { background: white; border-radius: 12px; padding: 20px; border: 1px solid #e5e5e5; }
-    .card .label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
-    .card .value { font-size: 28px; font-weight: 700; color: #1a1a1a; margin-top: 6px; }
-    .card .sub { font-size: 12px; color: #1a56db; margin-top: 4px; }
-
-    /* TABLA */
-    .table-section { background: white; border-radius: 12px; border: 1px solid #e5e5e5; overflow: hidden; }
-    .table-header { padding: 20px 24px; border-bottom: 1px solid #e5e5e5; display: flex; justify-content: space-between; align-items: center; }
-    .table-header h2 { font-size: 16px; font-weight: 600; }
+    .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+    .page-header h1 { font-size: 24px; font-weight: 700; }
+    .page-header .fecha { font-size: 13px; color: #888; margin-top: 4px; }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; background: #dcfce7; color: #16a34a; font-weight: 600; margin-left: 10px; }
+    .paso { padding: 8px 16px; background: #1a56db; color: white; border-radius: 8px; font-size: 13px; font-weight: 600; }
+    .header-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .alerta { background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 14px 20px; margin-bottom: 24px; font-size: 14px; color: #92400e; display: flex; align-items: center; gap: 8px; }
+    .layout { display: grid; grid-template-columns: 1fr 300px; gap: 24px; }
+    .tabla-section { background: white; border-radius: 12px; border: 1px solid #e5e5e5; overflow: hidden; }
+    .tabla-header { padding: 16px 24px; border-bottom: 1px solid #e5e5e5; display: flex; justify-content: space-between; align-items: center; }
+    .tabla-header input { padding: 8px 14px; border: 1px solid #e5e5e5; border-radius: 8px; font-size: 13px; width: 220px; outline: none; }
+    .tabla-header input:focus { border-color: #1a56db; }
+    .tabla-header span { font-size: 13px; color: #888; }
     table { width: 100%; border-collapse: collapse; }
-    th { background: #f9f9f9; padding: 12px 24px; text-align: left; font-size: 12px; color: #888; text-transform: uppercase; }
-    td { padding: 14px 24px; border-top: 1px solid #f0f0f0; font-size: 14px; color: #333; }
+    th { background: #f9f9f9; padding: 11px 20px; text-align: left; font-size: 12px; color: #888; text-transform: uppercase; }
+    td { padding: 13px 20px; border-top: 1px solid #f0f0f0; font-size: 14px; color: #333; }
     tr:hover td { background: #f9fbff; }
-    .btn { padding: 8px 16px; background: #1a56db; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
-    .btn:hover { background: #1446b8; }
-    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; background: #e8f0fe; color: #1a56db; }
+    .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: white; flex-shrink: 0; }
+    .emp-info { display: flex; align-items: center; gap: 10px; }
+    .badge-area { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; background: #f0f0f0; color: #555; }
+    .badge-calculado { background: #dcfce7; color: #16a34a; display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 12px; }
+    .badge-pendiente { background: #f0f0f0; color: #888; display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 12px; }
+    .btn-recibo { padding: 6px 14px; background: white; color: #555; border: 1px solid #e5e5e5; border-radius: 8px; cursor: pointer; font-size: 13px; }
+    .btn-recibo:hover { background: #f0f4ff; color: #1a56db; border-color: #1a56db; }
+    .btn-calcular { padding: 6px 14px; background: #1a56db; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
+    .btn-calcular:hover { background: #1446b8; }
+    .monto-rojo { color: #dc2626; }
+    .monto-verde { color: #16a34a; font-weight: 600; }
+    .resumen { display: flex; flex-direction: column; gap: 16px; }
+    .card-resumen { background: white; border-radius: 12px; border: 1px solid #e5e5e5; padding: 20px; }
+    .card-resumen h3 { font-size: 13px; color: #888; margin-bottom: 16px; display: flex; align-items: center; gap: 6px; }
+    .resumen-fila { display: flex; justify-content: space-between; font-size: 14px; padding: 5px 0; }
+    .resumen-fila .label { color: #555; }
+    .resumen-fila .valor { font-weight: 600; }
+    .resumen-fila .rojo { color: #dc2626; }
+    .resumen-fila .verde { color: #16a34a; font-weight: 700; font-size: 15px; }
+    .progress-item { margin-bottom: 12px; }
+    .progress-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+    .progress-bar { background: #e5e5e5; border-radius: 10px; height: 8px; }
+    .progress-fill { background: #1a56db; border-radius: 10px; height: 8px; transition: width 0.5s; }
+    .stat-row { display: flex; justify-content: space-between; font-size: 14px; padding: 6px 0; border-bottom: 1px solid #f5f5f5; }
+    .stat-row:last-child { border-bottom: none; }
+    .stat-num { font-weight: 700; }
+    .stat-num.naranja { color: #e67e00; }
+    .btn-calcular-todos { width: 100%; padding: 10px; background: #1a56db; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; margin-top: 8px; }
+    .btn-calcular-todos:hover { background: #1446b8; }
+    .btn-imprimir { padding: 8px 16px; background: white; color: #555; border: 1px solid #e5e5e5; border-radius: 8px; cursor: pointer; font-size: 14px; }
   </style>
 </head>
 <body>
@@ -52,82 +73,205 @@
     <p>Moreno Rodríguez y Asociados</p>
   </div>
   <nav>
+    <a href="#">🏠 Dashboard</a>
     <a href="#">👥 Personas</a>
+    <a href="#">📄 Documentos</a>
+    <a href="#">⭐ Evaluaciones</a>
+    <a href="#">🎯 Objetivos</a>
     <a href="#" class="active">💰 Nóminas</a>
     <a href="#">➖ Deducciones</a>
     <a href="#">📊 Informes</a>
+    <a href="#">📢 Canal de denuncias</a>
   </nav>
 </div>
 
 <div class="main">
-  <div class="header">
-    <h1>Nómina — Jun 2026</h1>
-    <p>Moreno Rodríguez y Asociados · Panel de Nómina</p>
-  </div>
-
-  <div class="cards">
-    <div class="card">
-      <div class="label">Empleados registrados</div>
-      <div class="value" id="total-empleados">—</div>
-      <div class="sub">activos este mes</div>
+  <div class="page-header">
+    <div>
+      <div class="header-left">
+        <h1>Nómina — Junio 2026</h1>
+        <span class="badge">● Abierto</span>
+      </div>
+      <div class="fecha">01 Jun 2026 — 30 Jun 2026 · Fecha límite: <strong>10 Jun 2026</strong></div>
     </div>
-    <div class="card">
-      <div class="label">Nómina del mes</div>
-      <div class="value">Jun 26</div>
-      <div class="sub" style="color:#e67e00">pendiente de cierre</div>
-    </div>
-    <div class="card">
-      <div class="label">Total a pagar</div>
-      <div class="value" id="total-pagar">—</div>
-      <div class="sub">neto estimado</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn-imprimir" onclick="window.print()">🖨 Imprimir</button>
+      <div class="paso">📋 Paso 2 de 5: Cálculo</div>
     </div>
   </div>
 
-  <div class="table-section">
-    <div class="table-header">
-      <h2>Empleados</h2>
+  <div class="alerta" id="alerta">
+    ⚠️ <span id="alerta-texto">Cargando empleados...</span>
+  </div>
+
+  <div class="layout">
+    <div class="tabla-section">
+      <div class="tabla-header">
+        <input type="text" id="buscador" placeholder="Buscar empleado..." oninput="filtrar()">
+        <span id="conteo">— empleados</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Empleado</th>
+            <th>Área</th>
+            <th>Sueldo bruto</th>
+            <th>Deducciones</th>
+            <th>Neto</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tabla-body"></tbody>
+      </table>
     </div>
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Nombre</th>
-          <th>Puesto</th>
-          <th>Fecha ingreso</th>
-          <th>Salario bruto</th>
-          <th>Acción</th>
-        </tr>
-      </thead>
-      <tbody id="tabla-empleados">
-        <tr><td colspan="6" style="text-align:center;color:#aaa">Cargando empleados...</td></tr>
-      </tbody>
-    </table>
+
+    <div class="resumen">
+      <div class="card-resumen">
+        <h3>📊 Resumen del período</h3>
+        <div class="stat-row"><span>Total empleados</span><span class="stat-num" id="total-emp">—</span></div>
+        <div class="stat-row"><span>Calculados</span><span class="stat-num" id="calculados">—</span></div>
+        <div class="stat-row"><span>Pendientes</span><span class="stat-num naranja" id="pendientes">—</span></div>
+        <div class="progress-item" style="margin-top:12px">
+          <div class="progress-label"><span>Avance</span><span id="avance-pct">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+        </div>
+        <button class="btn-calcular-todos" onclick="calcularTodos()">⚡ Calcular todos</button>
+      </div>
+
+      <div class="card-resumen">
+        <h3>💰 Totales MXN</h3>
+        <div class="resumen-fila"><span class="label">Bruto total</span><span class="valor" id="bruto-total">—</span></div>
+        <div class="resumen-fila"><span class="label">— IMSS</span><span class="valor rojo" id="total-imss">—</span></div>
+        <div class="resumen-fila"><span class="label">— ISR</span><span class="valor rojo" id="total-isr">—</span></div>
+        <div class="resumen-fila"><span class="label">— INFONAVIT</span><span class="valor rojo" id="total-infonavit">—</span></div>
+        <div style="border-top:1px solid #e5e5e5;margin-top:8px;padding-top:8px">
+          <div class="resumen-fila"><span class="label"><strong>Neto a dispersar</strong></span><span class="verde" id="neto-total">—</span></div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
+  const colores = ['#1a56db','#16a34a','#dc2626','#e67e00','#7c3aed','#0891b2','#be185d'];
+  let empleadosData = [];
+  let calculados = new Set();
+
+  const fmt = n => '$' + parseFloat(n).toLocaleString('es-MX', {minimumFractionDigits: 0});
+
+  function getColor(nombre) {
+    let hash = 0;
+    for (let c of nombre) hash += c.charCodeAt(0);
+    return colores[hash % colores.length];
+  }
+
+  function getInitials(nombre) {
+    return nombre.split(' ').slice(0,2).map(n => n[0]).join('');
+  }
+
+  function calcularDeducciones(salario) {
+    const imss = salario * 0.0625;
+    const isr = salario * 0.10;
+    const infonavit = salario * 0.05;
+    const total = imss + isr + infonavit;
+    const neto = salario - total;
+    return { imss, isr, infonavit, total, neto };
+  }
+
+  function actualizarTotales() {
+    let bruto = 0, imss = 0, isr = 0, infonavit = 0, neto = 0;
+    empleadosData.forEach(e => {
+      if (e.salario > 0) {
+        const d = calcularDeducciones(e.salario);
+        bruto += e.salario;
+        imss += d.imss;
+        isr += d.isr;
+        infonavit += d.infonavit;
+        neto += d.neto;
+      }
+    });
+    document.getElementById('bruto-total').textContent = fmt(bruto);
+    document.getElementById('total-imss').textContent = '-' + fmt(imss);
+    document.getElementById('total-isr').textContent = '-' + fmt(isr);
+    document.getElementById('total-infonavit').textContent = '-' + fmt(infonavit);
+    document.getElementById('neto-total').textContent = fmt(neto);
+  }
+
+  function renderTabla(lista) {
+    const tbody = document.getElementById('tabla-body');
+    tbody.innerHTML = '';
+    lista.forEach(e => {
+      const calc = calculados.has(e.id) && e.salario > 0;
+      const d = calcularDeducciones(e.salario);
+      const color = getColor(e.nombre);
+      tbody.innerHTML += `
+        <tr>
+          <td>
+            <div class="emp-info">
+              <div class="avatar" style="background:${color}">${getInitials(e.nombre)}</div>
+              <span>${e.nombre}</span>
+            </div>
+          </td>
+          <td><span class="badge-area">${e.puesto}</span></td>
+          <td>${e.salario > 0 ? fmt(e.salario) : '—'}</td>
+          <td class="monto-rojo">${e.salario > 0 ? fmt(d.total) : '—'}</td>
+          <td class="monto-verde">${calc ? fmt(d.neto) : '—'}</td>
+          <td>${calc
+            ? '<span class="badge-calculado">✓ Calculado</span>'
+            : '<span class="badge-pendiente">⏳ Pendiente</span>'
+          }</td>
+          <td>${calc
+            ? `<button class="btn-recibo" onclick="window.location.href='recibo.html?id=${e.id}'">👁 Recibo</button>`
+            : (e.salario > 0 ? `<button class="btn-calcular" onclick="calcular(${e.id})">⚡ Calcular</button>` : '—')
+          }</td>
+        </tr>`;
+    });
+  }
+
+  function actualizarResumen() {
+    const total = empleadosData.length;
+    const calc = calculados.size;
+    const pend = total - calc;
+    const pct = Math.round((calc / total) * 100);
+    document.getElementById('total-emp').textContent = total;
+    document.getElementById('calculados').textContent = calc;
+    document.getElementById('pendientes').textContent = pend;
+    document.getElementById('avance-pct').textContent = pct + '%';
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('conteo').textContent = total + ' empleados';
+    document.getElementById('alerta-texto').innerHTML = pend > 0
+      ? `<strong>${pend} empleados</strong> pendientes de calcular. Calcula su nómina individualmente o usa "Calcular todos".`
+      : '✅ Todos los empleados han sido calculados.';
+  }
+
+  function calcular(id) {
+    calculados.add(id);
+    filtrar();
+    actualizarResumen();
+  }
+
+  function calcularTodos() {
+    empleadosData.forEach(e => { if (e.salario > 0) calculados.add(e.id); });
+    filtrar();
+    actualizarResumen();
+  }
+
+  function filtrar() {
+    const q = document.getElementById('buscador').value.toLowerCase();
+    const filtrados = empleadosData.filter(e => e.nombre.toLowerCase().includes(q));
+    renderTabla(filtrados);
+  }
+
   fetch('http://localhost:3000/api/nomina/empleados')
     .then(r => r.json())
-    .then(empleados => {
-      document.getElementById('total-empleados').textContent = empleados.length;
-      const tbody = document.getElementById('tabla-empleados');
-      tbody.innerHTML = '';
-      empleados.forEach(e => {
-        tbody.innerHTML += `
-          <tr>
-            <td>${e.id}</td>
-            <td><strong>${e.nombre}</strong></td>
-            <td><span class="badge">${e.puesto}</span></td>
-            <td>${e.fechaIngreso}</td>
-            <td>$${e.salario.toLocaleString()}</td>
-            <td><button class="btn" onclick="verNomina(${e.id})">Ver recibo</button></td>
-          </tr>`;
-      });
+    .then(data => {
+      empleadosData = data;
+      data.forEach(e => { if (e.salario > 0) calculados.add(e.id); });
+      renderTabla(data);
+      actualizarResumen();
+      actualizarTotales();
     });
-
-  function verNomina(id) {
-    window.location.href = `recibo.html?id=${id}`;
-  }
 </script>
 </body>
 </html>

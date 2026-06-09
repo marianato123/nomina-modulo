@@ -18,25 +18,29 @@
     .sidebar nav a.active { background: #f0f4ff; color: #1a56db; font-weight: 600; border-right: 3px solid #1a56db; }
 
     .main { margin-left: 220px; padding: 32px; width: 100%; }
-
     .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
     .topbar a { color: #1a56db; text-decoration: none; font-size: 14px; }
     .btn-pdf { padding: 10px 20px; background: #1a56db; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; }
-    .btn-pdf:hover { background: #1446b8; }
 
-    .recibo { background: white; border-radius: 12px; border: 1px solid #e5e5e5; overflow: hidden; max-width: 860px; }
+    .recibo { background: white; border-radius: 12px; border: 1px solid #e5e5e5; overflow: hidden; max-width: 900px; }
     .recibo-header { background: #1a56db; padding: 24px 32px; }
     .recibo-header h2 { color: white; font-size: 20px; }
     .recibo-header p { color: #a8c4f5; font-size: 13px; margin-top: 4px; }
 
-    .recibo-info { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 28px 32px; border-bottom: 1px solid #f0f0f0; }
-    .info-item .label { font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .recibo-info { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 28px 32px; border-bottom: 1px solid #f0f0f0; }
+    .info-item { display: flex; flex-direction: column; gap: 4px; }
+    .info-item .label { font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; }
     .info-item .value { font-size: 14px; color: #1a1a1a; font-weight: 500; }
+    .info-item input { font-size: 14px; color: #1a1a1a; border: 1px solid #e5e5e5; border-radius: 6px; padding: 6px 10px; width: 100%; outline: none; }
+    .info-item input:focus { border-color: #1a56db; }
+    .info-item input.error { border-color: #dc2626; background: #fff5f5; }
+    .info-item input.valid { border-color: #16a34a; background: #f0fdf4; }
+    .error-msg { font-size: 11px; color: #dc2626; margin-top: 2px; display: none; }
 
-    .recibo-body { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+    .recibo-body { display: grid; grid-template-columns: 1fr 1fr; }
     .col { padding: 24px 32px; }
     .col:first-child { border-right: 1px solid #f0f0f0; }
-    .col h3 { font-size: 13px; color: #888; text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 6px; }
+    .col h3 { font-size: 13px; text-transform: uppercase; margin-bottom: 16px; }
     .col h3.verde { color: #16a34a; }
     .col h3.rojo { color: #dc2626; }
     .fila { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f9f9f9; font-size: 14px; }
@@ -50,9 +54,10 @@
     .recibo-footer .neto-valor { color: white; font-size: 28px; font-weight: 700; }
     .recibo-footer .neto-letras { color: #a8c4f5; font-size: 12px; margin-top: 2px; }
 
-    .resumen { margin-top: 24px; max-width: 860px; background: white; border-radius: 12px; border: 1px solid #e5e5e5; padding: 20px 28px; }
-    .resumen h3 { font-size: 13px; color: #888; margin-bottom: 12px; }
-    .resumen-fila { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; }
+    .guardar-btn { margin-top: 20px; max-width: 900px; display: flex; justify-content: flex-end; }
+    .guardar-btn button { padding: 10px 24px; background: #16a34a; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; }
+    .guardar-btn button:hover { background: #15803d; }
+    .success-msg { display: none; color: #16a34a; font-size: 14px; margin-top: 12px; text-align: right; }
   </style>
 </head>
 <body>
@@ -76,17 +81,49 @@
     <button class="btn-pdf" onclick="window.print()">⬇ Descargar PDF</button>
   </div>
 
-  <div class="recibo" id="recibo">
+  <div class="recibo">
     <div class="recibo-header">
-      <h2>Recibo de Nómina — <span id="mes">Jun 2026</span></h2>
+      <h2>Recibo de Nómina — Jun 2026</h2>
       <p>Moreno Rodríguez y Asociados</p>
     </div>
 
     <div class="recibo-info">
-      <div class="info-item"><div class="label">Nombre completo</div><div class="value" id="nombre">—</div></div>
-      <div class="info-item"><div class="label">Puesto</div><div class="value" id="puesto">—</div></div>
-      <div class="info-item"><div class="label">Fecha de ingreso</div><div class="value" id="fecha">—</div></div>
-      <div class="info-item"><div class="label">ID Empleado</div><div class="value" id="emp-id">—</div></div>
+      <div class="info-item">
+        <div class="label">Nombre completo</div>
+        <div class="value" id="nombre">—</div>
+      </div>
+      <div class="info-item">
+        <div class="label">RFC</div>
+        <input type="text" id="rfc" placeholder="XXXX000000XXX" maxlength="13" oninput="validarRFC()">
+        <span class="error-msg" id="rfc-error">RFC inválido (ej. NALN950101W0)</span>
+      </div>
+      <div class="info-item">
+        <div class="label">CURP</div>
+        <input type="text" id="curp" placeholder="XXXX000000XXXXXX00" maxlength="18" oninput="validarCURP()">
+        <span class="error-msg" id="curp-error">CURP inválida (18 caracteres)</span>
+      </div>
+      <div class="info-item">
+        <div class="label">NSS (IMSS)</div>
+        <input type="text" id="nss" placeholder="00-00-00-0000-0" maxlength="11" oninput="validarNSS()">
+        <span class="error-msg" id="nss-error">NSS inválido (11 dígitos)</span>
+      </div>
+      <div class="info-item">
+        <div class="label">Puesto</div>
+        <div class="value" id="puesto">—</div>
+      </div>
+      <div class="info-item">
+        <div class="label">Departamento</div>
+        <div class="value" id="departamento">—</div>
+      </div>
+      <div class="info-item">
+        <div class="label">Fecha de ingreso</div>
+        <div class="value" id="fecha">—</div>
+      </div>
+      <div class="info-item">
+        <div class="label">Banco / Cuenta</div>
+        <input type="text" id="banco" placeholder="Ej. BBVA · ****1234">
+        <span class="error-msg" id="banco-error"></span>
+      </div>
     </div>
 
     <div class="recibo-body">
@@ -94,6 +131,8 @@
         <h3 class="verde">+ Percepciones</h3>
         <div class="fila"><span class="concepto">Sueldo base</span><span class="monto-verde" id="sueldo">—</span></div>
         <div class="fila"><span class="concepto">Parte exenta (art. 93)</span><span class="monto-verde" id="exenta">—</span></div>
+        <div class="fila"><span class="concepto">Horas extra</span><span class="monto-verde">$0.00</span></div>
+        <div class="fila"><span class="concepto">Fondo de ahorro</span><span class="monto-verde">$0.00</span></div>
         <div class="fila total"><span>Total percepciones</span><span class="monto-verde" id="total-percepciones">—</span></div>
       </div>
       <div class="col">
@@ -101,6 +140,7 @@
         <div class="fila"><span class="concepto">IMSS (cuota obrera)</span><span class="monto-rojo" id="imss">—</span></div>
         <div class="fila"><span class="concepto">ISR retenido</span><span class="monto-rojo" id="isr">—</span></div>
         <div class="fila"><span class="concepto">INFONAVIT</span><span class="monto-rojo" id="infonavit">—</span></div>
+        <div class="fila"><span class="concepto">Otras deducciones</span><span class="monto-rojo">-$0.00</span></div>
         <div class="fila total"><span>Total deducciones</span><span class="monto-rojo" id="total-deducciones">—</span></div>
       </div>
     </div>
@@ -108,11 +148,16 @@
     <div class="recibo-footer">
       <div>
         <div class="neto-label">Neto a pagar</div>
-        <div class="neto-letras" id="neto-letras">—</div>
+        <div class="neto-letras" id="neto-letras">Moreno Rodríguez y Asociados · Jun 2026</div>
       </div>
       <div class="neto-valor" id="neto">—</div>
     </div>
   </div>
+
+  <div class="guardar-btn">
+    <button onclick="guardar()">💾 Guardar datos</button>
+  </div>
+  <div class="success-msg" id="success-msg">✅ Datos guardados correctamente</div>
 </div>
 
 <script>
@@ -124,8 +169,8 @@
     .then(d => {
       document.getElementById('nombre').textContent = d.empleado;
       document.getElementById('puesto').textContent = d.puesto || '—';
+      document.getElementById('departamento').textContent = d.puesto || '—';
       document.getElementById('fecha').textContent = d.fechaIngreso || '—';
-      document.getElementById('emp-id').textContent = '#' + id;
 
       const bruto = parseFloat(d.salarioBruto);
       const exenta = bruto * 0.065;
@@ -145,8 +190,58 @@
       document.getElementById('infonavit').textContent = '-' + fmt(infonavit);
       document.getElementById('total-deducciones').textContent = '-' + fmt(totalDed);
       document.getElementById('neto').textContent = fmt(neto);
-      document.getElementById('neto-letras').textContent = 'Moreno Rodríguez y Asociados · Jun 2026';
+
+      // Cargar datos guardados
+      const saved = JSON.parse(localStorage.getItem(`empleado-${id}`) || '{}');
+      if (saved.rfc) document.getElementById('rfc').value = saved.rfc;
+      if (saved.curp) document.getElementById('curp').value = saved.curp;
+      if (saved.nss) document.getElementById('nss').value = saved.nss;
+      if (saved.banco) document.getElementById('banco').value = saved.banco;
     });
+
+  function validarRFC() {
+    const input = document.getElementById('rfc');
+    const error = document.getElementById('rfc-error');
+    const val = input.value.toUpperCase();
+    input.value = val;
+    const regex = /^[A-Z]{4}\d{6}[A-Z0-9]{3}$/;
+    if (val.length === 0) { input.className = ''; error.style.display = 'none'; return; }
+    if (regex.test(val)) { input.className = 'valid'; error.style.display = 'none'; }
+    else { input.className = 'error'; error.style.display = 'block'; }
+  }
+
+  function validarCURP() {
+    const input = document.getElementById('curp');
+    const error = document.getElementById('curp-error');
+    const val = input.value.toUpperCase();
+    input.value = val;
+    const regex = /^[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]\d$/;
+    if (val.length === 0) { input.className = ''; error.style.display = 'none'; return; }
+    if (regex.test(val)) { input.className = 'valid'; error.style.display = 'none'; }
+    else { input.className = 'error'; error.style.display = 'block'; }
+  }
+
+  function validarNSS() {
+    const input = document.getElementById('nss');
+    const error = document.getElementById('nss-error');
+    const val = input.value.replace(/\D/g, '');
+    if (val.length === 0) { input.className = ''; error.style.display = 'none'; return; }
+    if (val.length === 11) { input.className = 'valid'; error.style.display = 'none'; }
+    else { input.className = 'error'; error.style.display = 'block'; }
+  }
+
+  function guardar() {
+    const data = {
+      rfc: document.getElementById('rfc').value,
+      curp: document.getElementById('curp').value,
+      nss: document.getElementById('nss').value,
+      banco: document.getElementById('banco').value
+    };
+    localStorage.setItem(`empleado-${id}`, JSON.stringify(data));
+    const msg = document.getElementById('success-msg');
+    msg.style.display = 'block';
+    setTimeout(() => msg.style.display = 'none', 3000);
+  }
 </script>
 </body>
 </html>
